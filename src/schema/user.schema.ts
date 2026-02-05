@@ -29,7 +29,6 @@ export const roomSchema = z.object({
 });
 
 export const bookingSchema = z.object({
-    hotelId: z.string().uuid(),
     roomId: z.string().uuid(),
     checkInDate: z.coerce.date(),
     checkOutDate: z.coerce.date(),

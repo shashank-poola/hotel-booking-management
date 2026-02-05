@@ -4,9 +4,9 @@ import authMiddleware from "../middleware/user.middleware";
 
 const hotelRouter = Router()
 
-hotelRouter.post("/hotels", authMiddleware, createHotel);
-hotelRouter.post("/hotels/:hotelId/rooms", authMiddleware, roomsInHotels)
-hotelRouter.get("/hotels", authMiddleware, getHotels)
-hotelRouter.get("/hotels/:hotelId", getDetailedHotels)
+hotelRouter.post("/", authMiddleware, createHotel);
+hotelRouter.post("/:hotelId/rooms", authMiddleware, roomsInHotels)
+hotelRouter.get("/", authMiddleware, getHotels)
+hotelRouter.get("/:hotelId", getDetailedHotels)
 
 export default hotelRouter;

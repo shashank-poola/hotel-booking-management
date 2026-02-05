@@ -5,6 +5,6 @@ import { Router } from "express";
 const mainRouter = Router();
 
 mainRouter.use("/auth", authRouter);
-mainRouter.use("/", hotelRouter);
+mainRouter.use("/hotels", hotelRouter);
 
 export default mainRouter;
