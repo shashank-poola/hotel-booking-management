@@ -219,5 +219,97 @@ export const getBookingById = async ( req: Request, res: Response ) => {
 }
 
 export const cancelBooking = async ( req: Request, res: Response ) => {
+    try {
+        const { user } = ( req as AuthenticatedRequest);
 
+        if (!user) {
+            res.status(401).json({
+                "success": false,
+                "data": null,
+                "error": "UNAUTHORIZED"
+            })
+            return;
+        }
+
+        if ( user.role !== "customer") {
+            res.status(403).json({
+                "success": false,
+                "data": null,
+                "error": "FORBIDDEN"
+            })
+            return;
+        }
+
+        const bookingId = req.params.bookingId as string;
+        const booking = await prisma.booking.findUnique({
+            where: {
+                id: bookingId
+            }
+        });
+
+        if (!booking) {
+            res.status(404).json({
+                "success": false,
+                "data": null,
+                "error": "BOOKING_NOT_FOUND"
+            })
+            return;
+        }
+
+        if (booking.cancelledAt) {
+            res.status(400).json({
+                "success": false,
+                "data": null,
+                "error": "ALREADY_CANCELLED"
+            })
+            return;
+        }
+
+        const now = new Date();
+        const checkIn = new Date(booking.checkInDate);
+        
+        const deadlineCheck = 
+            (checkIn.getTime() - now.getTime()) / (1000 * 60 * 60);
+        
+        if (deadlineCheck < 24) {
+            res.status(400).json({
+                "success": false,
+                "data": null,
+                "error": "CANCELLATION_DEADLINE_PASSED"
+            })
+            return;
+        }
+
+        const cancellation = await prisma.booking.update({
+            where: {
+                id: bookingId
+            },
+            data: {
+                status: "cancelled",
+                cancelledAt: now
+            }, 
+            select: {
+                id: true,
+                status: true,
+                cancelledAt: true
+            }
+        })
+
+        return res.status(200).json({
+            "success": true,
+            "data": {
+                id: cancellation.id,
+                status: cancellation.status,
+                cancelledAt: cancellation.cancelledAt
+            }
+        })
+
+    } catch (error) {
+        res.status(500).json({
+            "success": false,
+            "data": null,
+            "error": "INTERNAL_SERVER_ERROR"
+        })
+        return;
+    }
 }
