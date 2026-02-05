@@ -6,7 +6,7 @@ const hotelRouter = Router()
 
 hotelRouter.post("/", authMiddleware, createHotel);
 hotelRouter.post("/:hotelId/rooms", authMiddleware, roomsInHotels)
-hotelRouter.get("/", authMiddleware, getHotels)
-hotelRouter.get("/:hotelId", getDetailedHotels)
+hotelRouter.get("/", authMiddleware, getHotels);
+hotelRouter.get("/:hotelId", getDetailedHotels);
 
 export default hotelRouter;

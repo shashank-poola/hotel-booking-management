@@ -149,5 +149,9 @@ export const bookingRoom = async ( req: Request, res: Response ) => {
 };
 
 export const getBookingById = async ( req: Request, res: Response ) => {
+
+}
+
+export const cancelBooking = async ( req: Request, res: Response ) => {
     
 }
