@@ -256,6 +256,15 @@ export const cancelBooking = async ( req: Request, res: Response ) => {
             return;
         }
 
+        if (booking.userId !== user.id) {
+            res.status(403).json({
+                "success": false,
+                "data": null,
+                "error": "FORBIDDEN"
+            })
+            return;
+        }
+
         if (booking.cancelledAt) {
             res.status(400).json({
                 "success": false,
@@ -301,8 +310,8 @@ export const cancelBooking = async ( req: Request, res: Response ) => {
                 id: cancellation.id,
                 status: cancellation.status,
                 cancelledAt: cancellation.cancelledAt
-            }
-        })
+            },
+        });
 
     } catch (error) {
         res.status(500).json({
@@ -311,5 +320,5 @@ export const cancelBooking = async ( req: Request, res: Response ) => {
             "error": "INTERNAL_SERVER_ERROR"
         })
         return;
-    }
-}
+    };
+};

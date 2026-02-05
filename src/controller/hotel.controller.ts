@@ -264,5 +264,5 @@ export const getDetailedHotels = async (req: Request, res: Response ) => {
             "error": "INTERNAL_SERVER_ERROR"
         })
         return;
-    }
-}
+    };
+};

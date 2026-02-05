@@ -65,8 +65,8 @@ export const signUp = async ( req: Request, res: Response ) => {
             "error": "SERVER_ERROR"
         })
         return;
-    }
-}
+    };
+};
 
 export const login = async (req: Request, res: Response ) => {
     try {
@@ -139,6 +139,7 @@ export const login = async (req: Request, res: Response ) => {
             "data": null,
             "error": "SERVER_ERROR"
         })
-    }
-}
+        return;
+    };
+};
 

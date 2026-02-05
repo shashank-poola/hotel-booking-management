@@ -42,9 +42,8 @@ export const bookingSchema = z.object({
 );
 
 export const reviewSchema = z.object({
-    hotelId: z.string().uuid(),
     bookingId: z.string().uuid(),
-    review: z.number().int().min(1).max(5),
+    rating: z.number().int().min(1).max(5),
     comment: z.string().optional()
 });
 
