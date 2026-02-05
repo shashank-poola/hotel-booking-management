@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { bookingSchema } from "../schema/user.schema";
 import prisma from "../../database/src";
+import { BookingStatus } from "@prisma/client";
 import { type AuthenticatedRequest } from "../middleware/user.middleware";
 
 export const bookingRoom = async ( req: Request, res: Response ) => {
@@ -16,7 +17,7 @@ export const bookingRoom = async ( req: Request, res: Response ) => {
             return;
         }
 
-        if ( !user || user.role !== "customer" ) {
+        if ( user.role !== "customer" ) {
             res.status(403).json({
                 "success": false,
                 "data": null,
@@ -149,9 +150,74 @@ export const bookingRoom = async ( req: Request, res: Response ) => {
 };
 
 export const getBookingById = async ( req: Request, res: Response ) => {
+    try {
+        const { user } = ( req as AuthenticatedRequest);
 
+        if (!user) {
+            res.status(401).json({
+                "success": false,
+                "data": null,
+                "error": "UNAUTHORIZED"
+            })
+            return;
+        }
+
+        if ( user.role !== "customer") {
+            res.status(403).json({
+                "success": false,
+                "data": null,
+                "error": "FORBIDDEN"
+            })
+            return;
+        }
+
+        const { status } = req.query;
+
+        const bookings = await prisma.booking.findMany({
+            where: {
+                userId: user.id,
+                ...(status && { status: status as BookingStatus })
+            },
+            include: {
+                hotel: true,
+                room: true
+            },
+            orderBy: {
+                bookingDate: "desc"
+            }
+        })
+
+        const response = bookings.map((booking) => ({
+            id: booking.id,
+            roomId: booking.roomId,
+            hotelId: booking.hotelId,
+            hotelName: booking.hotel.name,
+            roomNumber: booking.room.roomNumber,
+            roomType: booking.room.roomType,
+            checkInDate: booking.checkInDate,
+            checkOutDate: booking.checkOutDate,
+            guests: booking.guests,
+            totalPrice: booking.totalPrice,
+            status: booking.status,
+            bookingDate: booking.bookingDate
+        }));
+
+        return res.status(200).json({
+            "success": true,
+            "data": response,
+            "error": null
+        })
+
+    } catch (error) {
+        res.status(500).json({
+            "success": false,
+            "data": null,
+            "error": "INTERNAL_SERVER_ERROR"
+        })
+        return;
+    }
 }
 
 export const cancelBooking = async ( req: Request, res: Response ) => {
-    
+
 }
