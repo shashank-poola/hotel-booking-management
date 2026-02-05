@@ -147,3 +147,7 @@ export const bookingRoom = async ( req: Request, res: Response ) => {
         return;
     };
 };
+
+export const getBookingById = async ( req: Request, res: Response ) => {
+    
+}
