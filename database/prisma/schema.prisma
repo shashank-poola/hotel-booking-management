@@ -1,0 +1,99 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  customer
+  owner
+}
+
+enum BookingStatus {
+  confirmed
+  cancelled
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      UserRole
+  phone     String?
+  createdAt DateTime @default(now())
+
+  hotels    Hotel[]
+  bookings  Booking[]
+  reviews   Review[]
+}
+
+model Hotel {
+  id            String   @id @default(uuid())
+  ownerId       String
+  name          String
+  description   String?
+  city          String
+  country       String
+  amenities     Json     @default("[]")
+  rating        Decimal  @default(0.0)
+  totalReviews  Int      @default(0)
+  createdAt     DateTime @default(now())
+
+  owner         User     @relation(fields: [ownerId], references: [id])
+  rooms         Room[]
+  bookings      Booking[]
+  reviews       Review[]
+}
+
+model Room {
+  id             String   @id @default(uuid())
+  hotelId        String
+  roomNumber     String
+  roomType       String
+  pricePerNight  Decimal
+  maxOccupancy   Int
+  createdAt      DateTime @default(now())
+
+  hotel          Hotel   @relation(fields: [hotelId], references: [id])
+
+  booking        Booking[]
+  @@unique([hotelId, roomNumber])
+}
+
+model Booking {
+  id            String        @id @default(uuid())
+  userId        String
+  hotelId       String
+  roomId        String
+  checkInDate   DateTime
+  checkOutDate  DateTime
+  guests        Int
+  totalPrice    Decimal
+  status        BookingStatus @default(confirmed)
+  bookingDate   DateTime      @default(now())
+  cancelledAt   DateTime?
+
+  user          User   @relation(fields: [userId], references: [id])
+  hotel         Hotel  @relation(fields: [hotelId], references: [id])
+  room          Room   @relation(fields: [roomId], references: [id])
+  review        Review?
+}
+
+model Review {
+  id         String   @id @default(uuid())
+  userId     String
+  hotelId    String
+  bookingId  String   @unique
+  rating     Int
+  comment    String?
+  createdAt  DateTime @default(now())
+
+  user       User    @relation(fields: [userId], references: [id])
+  hotel      Hotel   @relation(fields: [hotelId], references: [id])
+  booking    Booking @relation(fields: [bookingId], references: [id])
+
+  @@unique([userId, bookingId])
+}
