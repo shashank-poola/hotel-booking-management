@@ -119,11 +119,11 @@ export const reviewByCustomer = async( req: Request, res: Response ) => {
             },
         })
 
-        return;
+        return review;
         });
 
         return res.status(201).json({
-            "success": false,
+            "success": true,
             "data": result,
             "error": null
         });

@@ -116,8 +116,8 @@ export const roomsInHotels = async ( req: Request, res: Response ) => {
             },
         });
 
-        if (!exisitingRoom) {
-            res.status(404).json({
+        if (exisitingRoom) {
+            res.status(409).json({
                 "success": false,
                 "data": null,
                 "error": "ROOM_ALREADY_EXISTS"

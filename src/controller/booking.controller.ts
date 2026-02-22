@@ -71,7 +71,7 @@ export const bookingRoom = async ( req: Request, res: Response ) => {
             });
           }
 
-        if (guests < room.maxOccupancy) {
+        if (guests > room.maxOccupancy) {
             res.status(400).json({
                 "success": false,
                 "data": null,
