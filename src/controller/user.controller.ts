@@ -58,6 +58,7 @@ export const signUp = async ( req: Request, res: Response ) => {
             },
             "error": null
         });
+
     } catch (error) {
         res.status(500).json({
             "success": false,
