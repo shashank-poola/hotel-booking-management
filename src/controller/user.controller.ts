@@ -6,6 +6,20 @@ import { signUpSchema, loginSchema } from "../schema/user.schema";
 
 export const JWT_SECRET = process.env.JWT_SECRET;
 
+import express from "express";
+import db from "../db";
+const router = express.Router();
+// BUG (Code agent) — missing await
+router.get("/users/:id", async (req, res) => {
+  const user = db.query(`SELECT * FROM users WHERE id = ${req.params.id}`); // SECURITY: SQL injection
+  const allPosts = [];
+  for (const id of [1, 2, 3, 4, 5]) {
+    allPosts.push(await db.query(`SELECT * FROM posts WHERE user_id = ${id}`)); // PERFORMANCE: N+1 / loop queries
+  }
+  res.json({ user, posts: allPosts });
+});
+export default router;
+
 export const signUp = async ( req: Request, res: Response ) => {
     try {
         const { success, data } = signUpSchema.safeParse(req.body)
@@ -58,6 +72,7 @@ export const signUp = async ( req: Request, res: Response ) => {
             },
             "error": null
         });
+
     } catch (error) {
         res.status(500).json({
             "success": false,
